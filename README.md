@@ -2,6 +2,8 @@
 
 A web application that generates inspirational quotes using an LSTM neural network trained on travel, life, and wisdom quotes.
 
+<img width="2846" height="1525" alt="image" src="https://github.com/user-attachments/assets/936b67b7-3bc1-4ace-802d-ea6afcd7ff45" />
+
 ## Features
 
 - LSTM text generation with TensorFlow/Keras
