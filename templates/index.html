@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .controls .form-group {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9ff, #e8f0ff);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .generated-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #444;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ffe8e8, #ffd6d6);
+            border-left-color: #e74c3c;
+            color: #c0392b;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .example-seeds {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .example-seeds h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .seed-tag {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.2);
+            color: #333;
+            padding: 5px 12px;
+            margin: 3px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .seed-tag:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Random Quote Generator</h1>
+        <p class="subtitle">Enter a seed word or phrase to generate inspiring travel quotes!</p>
+        
+        <form id="textForm">
+            <div class="form-group">
+                <label for="seedText">Seed Text:</label>
+                <input type="text" id="seedText" name="seedText" placeholder="e.g., 'Travel', 'Adventure', 'Life is'" required>
+            </div>
+            
+            <div class="controls">
+                <div class="form-group">
+                    <label for="numWords">Words to Generate:</label>
+                    <input type="number" id="numWords" name="numWords" min="1" max="50" value="10">
+                </div>
+            </div>
+            
+            <button type="submit" id="generateBtn">Generate Quote</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating your quote...</p>
+        </div>
+
+        <div id="result" class="result">
+            <h3>✨ Generated Quote:</h3>
+            <div class="generated-text" id="generatedText"></div>
+        </div>
+
+        <div class="example-seeds">
+            <h4>💡 Try these seed words:</h4>
+            <span class="seed-tag" onclick="setSeed('Travel')">Travel</span>
+            <span class="seed-tag" onclick="setSeed('Adventure')">Adventure</span>
+            <span class="seed-tag" onclick="setSeed('Life is')">Life is</span>
+            <span class="seed-tag" onclick="setSeed('Dreams')">Dreams</span>
+            <span class="seed-tag" onclick="setSeed('Mountains')">Mountains</span>
+            <span class="seed-tag" onclick="setSeed('Ocean')">Ocean</span>
+            <span class="seed-tag" onclick="setSeed('Wisdom')">Wisdom</span>
+            <span class="seed-tag" onclick="setSeed('Success')">Success</span>
+            <span class="seed-tag" onclick="setSeed('Friendship')">Friendship</span>
+            <span class="seed-tag" onclick="setSeed('Growth')">Growth</span>
+            <span class="seed-tag" onclick="setSeed('Courage')">Courage</span>
+            <span class="seed-tag" onclick="setSeed('Innovation')">Innovation</span>
+            <span class="seed-tag" onclick="setSeed('Nature')">Nature</span>
+            <span class="seed-tag" onclick="setSeed('Knowledge')">Knowledge</span>
+            <span class="seed-tag" onclick="setSeed('Happiness')">Happiness</span>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('textForm');
+        const result = document.getElementById('result');
+        const loading = document.getElementById('loading');
+        const generateBtn = document.getElementById('generateBtn');
+        const generatedText = document.getElementById('generatedText');
+
+        function setSeed(seed) {
+            document.getElementById('seedText').value = seed;
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const seedText = document.getElementById('seedText').value.trim();
+            const numWords = parseInt(document.getElementById('numWords').value);
+            
+            if (!seedText) {
+                alert('Please enter a seed text');
+                return;
+            }
+
+            // Show loading, hide result
+            loading.classList.add('show');
+            result.classList.remove('show');
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        seed_text: seedText,
+                        num_words: numWords
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    generatedText.textContent = data.generated_text;
+                    result.classList.remove('error');
+                    result.classList.add('show');
+                } else {
+                    generatedText.textContent = data.error || 'An error occurred';
+                    result.classList.add('error');
+                    result.classList.add('show');
+                }
+            } catch (error) {
+                generatedText.textContent = 'Network error: ' + error.message;
+                result.classList.add('error');
+                result.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Quote';
+            }
+        });
+
+        // Add enter key support for number input
+        document.getElementById('numWords').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
